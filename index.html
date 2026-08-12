@@ -3,546 +3,883 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CID Personnel Progress Tracker</title>
+<title>CID Progress Tracking Dashboard</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
 
 :root{
-  --paper:#F4F0E4;
-  --paper-2:#ECE6D4;
-  --ink:#211E19;
-  --ink-soft:#5B5648;
-  --navy:#1B3A5C;
-  --navy-2:#274C74;
-  --gold:#A9821F;
-  --line:#CFC5A4;
-  --red:#9C3B2C;
-  --green:#3F6B49;
-  --amber:#B4841B;
-  --radius:2px;
+  --navy:#0B2A4A;
+  --navy-deep:#081F38;
+  --gold:#C08A22;
+  --gold-light:#E8B84B;
+  --bg:#F3F4F7;
+  --paper:#FFFFFF;
+  --line:#DCE0E7;
+  --ink:#1B222C;
+  --ink-soft:#5B6472;
+  --green:#1E7A46;
+  --green-bg:#E4F3EA;
+  --amber:#B8720B;
+  --amber-bg:#FBF0DD;
+  --red:#B3261E;
+  --red-bg:#FBEAE9;
+  --radius:10px;
 }
 *{box-sizing:border-box;}
-body{
-  margin:0;
-  background:var(--paper);
-  color:var(--ink);
-  font-family:'IBM Plex Sans', sans-serif;
-  -webkit-font-smoothing:antialiased;
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,.brand,.tab,.stat-num{font-family:'Libre Franklin',sans-serif;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+
+/* ===== Header ===== */
+header.topbar{
+  background:linear-gradient(180deg,var(--navy) 0%,var(--navy-deep) 100%);
+  color:#fff;padding:22px 28px 0 28px;
+  border-bottom:4px solid var(--gold);
 }
-.wrap{max-width:1040px;margin:0 auto;padding:28px 20px 80px;}
-
-header.hero{
-  border:1px solid var(--ink);
-  background:repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(27,58,92,0.035) 28px);
-  padding:26px 28px 22px;
-  position:relative;
-  margin-bottom:22px;
+.topbar-inner{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px;max-width:1280px;margin:0 auto;}
+.brand-block{display:flex;align-items:center;gap:14px;}
+.seal{
+  width:46px;height:46px;border-radius:50%;
+  border:2px solid var(--gold-light);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:13px;color:var(--gold-light);letter-spacing:0.5px;
+  flex-shrink:0;
 }
-header.hero::before{content:"";position:absolute; inset:6px; border:1px solid var(--line); pointer-events:none;}
-.eyebrow{
-  font-family:'IBM Plex Mono', monospace; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
-  color:var(--navy); display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;
+.brand{font-size:20px;font-weight:800;letter-spacing:0.3px;margin:0;}
+.brand small{display:block;font-family:'IBM Plex Sans',sans-serif;font-weight:400;font-size:12.5px;color:#B9C6D6;letter-spacing:0.4px;margin-top:2px;}
+.cy-field{display:flex;align-items:center;gap:8px;font-size:13px;color:#CBD6E3;}
+.cy-field input{
+  width:70px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.25);
+  color:#fff;border-radius:6px;padding:5px 8px;font-family:'IBM Plex Mono',monospace;font-size:13px;text-align:center;
 }
-h1{font-family:'Source Serif 4', serif; font-weight:700; font-size:clamp(26px,4vw,36px); margin:6px 0 4px; letter-spacing:-.01em;}
-.subline{font-size:14px; color:var(--ink-soft); max-width:62ch; line-height:1.5;}
-.hero-stats{margin-top:18px; display:flex; gap:0; border-top:1px solid var(--line); padding-top:14px;}
-.hstat{flex:1; padding:0 18px; border-left:1px solid var(--line);}
-.hstat:first-child{border-left:none;padding-left:0;}
-.hstat .n{font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600; color:var(--navy);}
-.hstat .l{font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); margin-top:2px;}
-
-.drive-bar{
-  margin-top:14px; padding-top:12px; border-top:1px solid var(--line);
-  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-  font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-soft);
+nav.tabs{max-width:1280px;margin:16px auto 0 auto;display:flex;gap:4px;}
+.tab{
+  background:transparent;border:none;color:#B9C6D6;padding:10px 18px;font-size:14px;font-weight:600;
+  cursor:pointer;border-radius:8px 8px 0 0;transition:all .15s ease;letter-spacing:0.2px;
 }
-.dot{width:8px; height:8px; border-radius:50%; flex:none;}
-.dot.off{background:#B9B097;}
-.dot.pending{background:var(--amber); animation:pulse 1s infinite;}
-.dot.on{background:var(--green);}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
-.drive-bar a{color:var(--navy); font-weight:600;}
+.tab:hover{color:#fff;background:rgba(255,255,255,0.06);}
+.tab.active{background:var(--bg);color:var(--navy);}
 
-.panel{background:#fff; border:1px solid var(--line); margin-bottom:18px;}
-.panel-head{display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--paper-2); border-bottom:1px solid var(--line);}
-.panel-head h2{font-family:'Source Serif 4', serif; font-size:16px; font-weight:600; margin:0;}
-.panel-body{padding:16px;}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 60px 28px;}
+.view{display:none;}
+.view.active{display:block;}
 
-label.small{font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft); display:block; margin-bottom:4px;}
-input[type=text]{
-  font-family:'IBM Plex Sans', sans-serif; font-size:13.5px; padding:8px 9px;
-  border:1px solid #B9B097; background:#fffdf8; color:var(--ink); border-radius:var(--radius); width:100%;
+/* ===== Cards ===== */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-bottom:18px;}
+.card h2{font-size:15px;margin:0 0 4px 0;color:var(--navy);}
+.card .sub{color:var(--ink-soft);font-size:12.5px;margin:0 0 16px 0;}
+.row{display:flex;gap:16px;flex-wrap:wrap;}
+
+/* ===== Ring / hero stat ===== */
+.hero{display:flex;gap:28px;align-items:center;flex-wrap:wrap;}
+.ring-wrap{position:relative;width:132px;height:132px;flex-shrink:0;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-label .num{font-family:'Libre Franklin',sans-serif;font-weight:800;font-size:26px;color:var(--navy);}
+.ring-label .lbl{font-size:10px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.6px;}
+.hero-stats{display:flex;gap:28px;flex-wrap:wrap;}
+.stat{min-width:110px;}
+.stat-num{font-size:24px;font-weight:800;color:var(--navy);}
+.stat-lbl{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+
+/* ===== Table ===== */
+.table-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap;}
+th{background:#F7F8FA;color:var(--ink-soft);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:0.4px;position:sticky;top:0;}
+tbody tr:hover{background:#FAFBFC;}
+td.name-cell{font-weight:600;color:var(--ink);white-space:normal;min-width:150px;}
+td.pos-tag{color:var(--ink-soft);font-size:12px;}
+.bar-cell{min-width:150px;}
+.bar-track{background:#EDEFF3;border-radius:5px;height:9px;width:100%;overflow:hidden;position:relative;}
+.bar-fill{height:100%;border-radius:5px;transition:width .3s ease;}
+.bar-pct{font-size:11.5px;color:var(--ink-soft);margin-top:3px;display:block;font-family:'IBM Plex Mono',monospace;}
+.pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.pill.green{background:var(--green-bg);color:var(--green);}
+.pill.amber{background:var(--amber-bg);color:var(--amber);}
+.pill.red{background:var(--red-bg);color:var(--red);}
+
+/* ===== Buttons / inputs ===== */
+button.btn{
+  background:var(--navy);color:#fff;border:none;border-radius:7px;padding:9px 16px;font-size:13px;font-weight:600;
+  cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:background .15s ease;
 }
-input[type=number]{
-  font-family:'IBM Plex Mono',monospace; font-size:13.5px; padding:8px 9px;
-  border:1px solid #B9B097; background:#fffdf8; color:var(--ink); border-radius:var(--radius);
-  width:64px; text-align:center;
+button.btn:hover{background:var(--navy-deep);}
+button.btn.gold{background:var(--gold);color:#3A2600;}
+button.btn.gold:hover{background:var(--gold-light);}
+button.btn.ghost{background:transparent;color:var(--navy);border:1px solid var(--line);}
+button.btn.ghost:hover{background:#F0F2F5;}
+button.btn.danger{background:transparent;color:var(--red);border:1px solid #F1C6C3;}
+button.btn.danger:hover{background:var(--red-bg);}
+input[type=text],select{
+  border:1px solid var(--line);border-radius:7px;padding:8px 10px;font-size:13.5px;font-family:'IBM Plex Sans',sans-serif;
+  background:#fff;color:var(--ink);
 }
-input:focus{outline:2px solid var(--navy); outline-offset:1px;}
+label.field-lbl{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:5px;font-weight:600;}
 
-.btn{
-  font-family:'IBM Plex Sans', sans-serif; font-size:13px; font-weight:600; padding:9px 16px;
-  border:1px solid var(--navy); background:var(--navy); color:#fff; cursor:pointer; border-radius:var(--radius);
-  transition:transform .08s ease, background .15s ease;
+/* ===== Roster ===== */
+.roster-add{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:18px;padding-bottom:18px;border-bottom:1px dashed var(--line);}
+.flag-check{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--ink-soft);}
+.person-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);gap:12px;flex-wrap:wrap;}
+.person-row:last-child{border-bottom:none;}
+.person-info{display:flex;flex-direction:column;gap:2px;}
+.person-flags{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px;}
+.flag-badge{font-size:10.5px;background:#EEF1F6;color:var(--ink-soft);padding:2px 7px;border-radius:5px;font-weight:600;}
+.item-line{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;}
+.item-list{margin-bottom:14px;}
+
+/* ===== Individual tracker ===== */
+.itrack-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:6px;}
+.quarter-block{margin-bottom:22px;}
+.quarter-title{font-size:13px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px 0;padding-bottom:6px;border-bottom:2px solid var(--gold);}
+.month-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
+.month-card{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:#FCFCFD;}
+.month-card h4{margin:0 0 8px 0;font-size:12.5px;color:var(--navy);text-transform:uppercase;letter-spacing:0.4px;}
+.check-line{display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:13px;line-height:1.35;}
+.check-line input{margin-top:2px;flex-shrink:0;}
+.check-line.done label{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--line);}
+.summary-strip{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 4px 0;}
+.summary-chip{flex:1;min-width:140px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:#fff;}
+.summary-chip .k{font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.4px;}
+.summary-chip .v{font-size:19px;font-weight:800;color:var(--navy);font-family:'Libre Franklin',sans-serif;}
+
+.empty-note{color:var(--ink-soft);font-size:13px;padding:18px 4px;}
+.legend-note{font-size:11.5px;color:var(--ink-soft);margin-top:10px;}
+.footer-note{text-align:center;color:var(--ink-soft);font-size:11.5px;margin-top:30px;}
+
+@media print{
+  header.topbar, nav.tabs, .no-print{display:none !important;}
+  body{background:#fff;}
+  .card{border:1px solid #ccc;break-inside:avoid;}
+  main{padding:0;max-width:100%;}
 }
-.btn:hover{background:var(--navy-2);}
-.btn:active{transform:translateY(1px);}
-.btn.ghost{background:transparent; color:var(--navy);}
-.btn.ghost:hover{background:rgba(27,58,92,0.06);}
-.btn.small{padding:6px 11px; font-size:12px;}
 
-.roster-add{display:flex; gap:10px; flex-wrap:wrap; align-items:end;}
-.field{flex:1; min-width:140px;}
-
-.person-card{border:1px solid var(--line); margin-bottom:14px; background:#fffefb; position:relative;}
-.person-top{display:flex; justify-content:space-between; align-items:flex-start; padding:14px 16px 10px; gap:16px; flex-wrap:wrap;}
-.person-id{display:flex; gap:12px; align-items:center;}
-.stamp-toggle{width:78px; height:78px; flex:none; border-radius:50%; cursor:pointer; position:relative; display:flex; align-items:center; justify-content:center;}
-.stamp-toggle .ring{position:absolute; inset:0; border-radius:50%; transform:rotate(-6deg); transition:border-color .2s ease, color .2s ease;}
-.stamp-toggle.off .ring{border:2.5px dashed #B9B097; color:#B9B097;}
-.stamp-toggle.on .ring{border:2.5px solid var(--red); color:var(--red); animation:stampIn .18s ease-out;}
-@keyframes stampIn{0%{transform:rotate(-6deg) scale(1.35); opacity:0;}100%{transform:rotate(-6deg) scale(1); opacity:1;}}
-.stamp-toggle .txt{font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:10.5px; letter-spacing:.06em; text-align:center; line-height:1.25; transform:rotate(-6deg); z-index:1;}
-.person-name{font-family:'Source Serif 4', serif; font-size:17px; font-weight:600;}
-.person-role{font-size:12px; color:var(--ink-soft); margin-top:1px;}
-.person-meta{font-size:11px; color:var(--ink-soft); margin-top:3px; font-family:'IBM Plex Mono',monospace;}
-
-.pct-block{text-align:right;}
-.pct-num{font-family:'IBM Plex Mono', monospace; font-size:28px; font-weight:600; color:var(--navy); line-height:1;}
-.pct-num.low{color:var(--red);}
-.pct-num.mid{color:var(--amber);}
-.pct-num.high{color:var(--green);}
-.pct-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft);}
-
-.gauge{height:8px; background:var(--paper-2); border:1px solid var(--line); margin:0 16px 14px; width:calc(100% - 32px);}
-.gauge > i{display:block; height:100%; background:var(--red); transition:width .25s ease, background .25s ease;}
-.gauge > i.mid{background:var(--amber);}
-.gauge > i.high{background:var(--green);}
-
-.docs-table{width:100%; border-collapse:collapse; font-size:13px;}
-.docs-table th{text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); font-weight:600; padding:6px 10px; border-bottom:1px solid var(--line);}
-.docs-table td{padding:6px 10px; border-bottom:1px solid #EEE7D4; vertical-align:middle;}
-.docs-table tr:last-child td{border-bottom:none;}
-.doc-name{font-weight:500;}
-.doc-name small{display:block; font-weight:400; color:var(--ink-soft); font-size:11px;}
-.docs-table td.num{text-align:center;}
-.docs-table td.pct{text-align:right; font-family:'IBM Plex Mono',monospace; color:var(--ink-soft); padding-right:16px;}
-
-.remarks-row{padding:0 16px 14px;}
-.remarks-row textarea{width:100%; min-height:40px; font-family:'IBM Plex Sans',sans-serif; font-size:12.5px; padding:8px; border:1px solid #B9B097; background:#fffdf8; border-radius:var(--radius); resize:vertical;}
-
-.person-actions{display:flex; gap:8px;}
-
-/* Timeline */
-.timeline{list-style:none; margin:0; padding:0;}
-.timeline li{
-  display:flex; gap:12px; padding:9px 0; border-bottom:1px solid #EEE7D4; font-size:13px;
+/* ===== Role overlay & badge ===== */
+.role-overlay{
+  position:fixed;inset:0;background:rgba(8,31,56,0.92);z-index:999;
+  display:none;align-items:center;justify-content:center;padding:20px;
 }
-.timeline li:last-child{border-bottom:none;}
-.timeline .ts{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft); white-space:nowrap; padding-top:1px;}
-.timeline .who{font-weight:600;}
-.timeline-empty{color:var(--ink-soft); font-size:13px; text-align:center; padding:14px 0;}
-
-.filter-tabs{display:flex; gap:6px; margin-bottom:14px;}
-.filter-tabs button{
-  font-family:'IBM Plex Sans',sans-serif; font-size:12.5px; font-weight:600; padding:6px 13px;
-  border:1px solid var(--line); background:#fff; color:var(--ink-soft); cursor:pointer; border-radius:var(--radius);
+.role-card{background:#fff;border-radius:12px;padding:30px 32px;max-width:440px;width:100%;text-align:center;}
+.role-card h2{color:var(--navy);margin:0 0 6px 0;font-size:19px;}
+.role-card p{color:var(--ink-soft);font-size:13px;margin:0 0 22px 0;}
+.role-option{
+  display:block;width:100%;text-align:left;background:#F7F8FA;border:1px solid var(--line);border-radius:9px;
+  padding:13px 16px;margin-bottom:10px;cursor:pointer;transition:border-color .15s ease,background .15s ease;
+  font-family:'IBM Plex Sans',sans-serif;
 }
-.filter-tabs button.active{background:var(--navy); border-color:var(--navy); color:#fff;}
-
-.empty{text-align:center; padding:34px 20px; color:var(--ink-soft); font-size:13.5px;}
-.empty b{color:var(--ink);}
-
-footer{text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:24px; font-family:'IBM Plex Mono',monospace;}
-
-.toast{
-  position:fixed; bottom:18px; left:50%; transform:translateX(-50%) translateY(10px);
-  background:var(--ink); color:#fff; padding:9px 16px; font-size:12.5px; border-radius:var(--radius);
-  opacity:0; pointer-events:none; transition:opacity .2s ease, transform .2s ease; font-family:'IBM Plex Mono',monospace; z-index:50;
+.role-option:hover{border-color:var(--gold);background:#FBF6E9;}
+.role-option .rt{font-weight:700;color:var(--navy);font-size:14px;}
+.role-option .rd{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+.role-badge{
+  font-size:11px;color:#CBD6E3;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);
+  padding:4px 10px;border-radius:20px;font-weight:600;letter-spacing:0.3px;
 }
-.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
-
-@media (max-width:560px){
-  .hero-stats{flex-wrap:wrap;}
-  .hstat{flex:1 1 45%; border-left:none; padding:8px 0; border-top:1px solid var(--line);}
-  .hstat:nth-child(-n+2){border-top:none;}
-  .stamp-toggle{width:64px;height:64px;}
-}
+.switch-role-btn{background:transparent;border:1px solid rgba(255,255,255,0.3);color:#CBD6E3;font-size:11px;
+  padding:4px 10px;border-radius:20px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
+.switch-role-btn:hover{background:rgba(255,255,255,0.1);}
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <header class="hero">
-    <div class="eyebrow">
-      <span>Schools Division of Romblon &middot; Curriculum Implementation Division</span>
-      <span>Personnel Progress Tracker</span>
-    </div>
-    <h1>CID Progress Tracker</h1>
-    <div class="subline">Live status of each personnel's Status Report on Commitments &amp; Outputs — IPCRF/OPCRF, QMS-QCP, and DEDP-AIP — with a running submission timeline.</div>
-    <div class="hero-stats">
-      <div class="hstat"><div class="n" id="statPeople">0</div><div class="l">Personnel Tracked</div></div>
-      <div class="hstat"><div class="n" id="statSubmitted">0</div><div class="l">Submitted</div></div>
-      <div class="hstat"><div class="n" id="statPending">0</div><div class="l">Not Yet Submitted</div></div>
-      <div class="hstat"><div class="n" id="statAvg">0%</div><div class="l">Avg. Completion</div></div>
-    </div>
-    <div class="drive-bar">
-      <span id="driveStatusDot" class="dot off"></span>
-      <span id="driveStatusText">Not connected — set APPS_SCRIPT_URL in the file</span>
-      <a id="sheetLink" href="#" target="_blank" style="display:none;">Open data sheet in Google Sheets ↗</a>
-    </div>
-  </header>
-
-  <div class="panel">
-    <div class="panel-head"><h2>Add Personnel</h2></div>
-    <div class="panel-body">
-      <div class="roster-add">
-        <div class="field">
-          <label class="small">Name</label>
-          <input type="text" id="newPersonName" placeholder="Juan Dela Cruz">
-        </div>
-        <div class="field">
-          <label class="small">Position</label>
-          <input type="text" id="newPersonRole" placeholder="EPS / PSDS / CID Staff">
-        </div>
-        <button class="btn" id="addPersonBtn">+ Add to Roster</button>
-      </div>
-    </div>
+<div class="role-overlay" id="roleOverlay">
+  <div class="role-card">
+    <h2>Who's viewing this dashboard?</h2>
+    <p>This selection only changes what you can see and edit on this device — it doesn't affect anyone else's access.</p>
+    <button class="role-option" onclick="chooseRole('chief')">
+      <div class="rt">CID Chief &mdash; View Only</div>
+      <div class="rd">See the consolidated dashboard and individual progress. No editing.</div>
+    </button>
+    <button class="role-option" onclick="chooseRole('secretariat')">
+      <div class="rt">Secretariat &mdash; Full Edit</div>
+      <div class="rd">Manage the roster, QCP/Other items, and encode progress for anyone.</div>
+    </button>
+    <button class="role-option" onclick="chooseRole('staff')">
+      <div class="rt">PSDS / EPS &mdash; Self-Report</div>
+      <div class="rd">Check off your own outputs. Roster setup is hidden.</div>
+    </button>
   </div>
-
-  <div class="panel">
-    <div class="panel-head"><h2>Personnel Progress</h2></div>
-    <div class="panel-body">
-      <div class="filter-tabs">
-        <button class="active" data-filter="all">All</button>
-        <button data-filter="submitted">Submitted</button>
-        <button data-filter="pending">Not Yet Submitted</button>
-      </div>
-      <div id="peopleList"><div class="empty">Loading…</div></div>
-    </div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-head"><h2>Submission Timeline</h2></div>
-    <div class="panel-body">
-      <ul class="timeline" id="timelineList"><li class="timeline-empty">No activity yet.</li></ul>
-    </div>
-  </div>
-
-  <footer>Storage: <span id="footerStorageMode">local (not saved)</span></footer>
 </div>
 
-<div class="toast" id="toast"></div>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand-block">
+      <div class="seal">CID</div>
+      <div>
+        <h1 class="brand">Progress Tracking Dashboard<small>Curriculum Implementation Division &middot; SDO Romblon &middot; Progress Review Meeting (PRM)</small></h1>
+      </div>
+    </div>
+    <div class="cy-field">
+      <span class="role-badge" id="roleBadge">&mdash;</span>
+      <button class="switch-role-btn" onclick="switchRole()">Switch view</button>
+      Calendar Year <input type="text" id="cyInput" value="2026">
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" data-view="dashboard">Consolidated Dashboard</button>
+    <button class="tab" data-view="individual">Individual Tracker</button>
+    <button class="tab" data-view="roster" id="rosterTabBtn">Roster &amp; Setup</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <div class="view active" id="view-dashboard">
+    <div class="card no-print" style="background:#FBF6E9;border-color:#EBD9A0;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+      <span style="font-size:12.5px;color:#6B5312;"><strong>Shared workspace</strong> &mdash; everyone who opens this link sees and can edit the same data. Send this link to your PSDS/EPS so they can check off their own outputs directly.</span>
+      <button class="btn ghost" style="padding:6px 12px;font-size:12px;" onclick="refreshFromShared()">Refresh data</button>
+    </div>
+    <div class="card hero">
+      <div class="ring-wrap">
+        <svg width="132" height="132" viewBox="0 0 132 132">
+          <circle cx="66" cy="66" r="56" stroke="#EDEFF3" stroke-width="14" fill="none"/>
+          <circle id="ringFg" cx="66" cy="66" r="56" stroke="#C08A22" stroke-width="14" fill="none" stroke-linecap="round" stroke-dasharray="352" stroke-dashoffset="352"/>
+        </svg>
+        <div class="ring-label"><span class="num" id="ringPct">0%</span><span class="lbl">Division</span></div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-num" id="statPersonnel">0</div><div class="stat-lbl">Personnel Tracked</div></div>
+        <div class="stat"><div class="stat-num" id="statDone">0</div><div class="stat-lbl">Outputs Completed</div></div>
+        <div class="stat"><div class="stat-num" id="statRequired">0</div><div class="stat-lbl">Outputs Required (CY)</div></div>
+        <div class="stat"><div class="stat-num" id="statOnTrack">0</div><div class="stat-lbl">On Track (&ge;80%)</div></div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;" class="no-print">
+        <button class="btn ghost" onclick="window.print()">Print for PRM</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Status per Personnel</h2>
+      <p class="sub">Percent of required outputs/commitments completed, by planning document, as of today. Use this table during the Status of Report Submissions agenda item.</p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Name / Position</th>
+              <th>IPCR / OPCRF</th>
+              <th>QMS&ndash;QCP</th>
+              <th>DEDP&ndash;AIP</th>
+              <th>Others</th>
+              <th>Overall</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="dashboardBody"></tbody>
+        </table>
+      </div>
+      <p class="legend-note">Status: <span class="pill green">On track</span> &ge;80% &nbsp; <span class="pill amber">Needs follow-up</span> 50&ndash;79% &nbsp; <span class="pill red">At risk</span> &lt;50%</p>
+    </div>
+  </div>
+
+  <!-- ===================== INDIVIDUAL TRACKER ===================== -->
+  <div class="view" id="view-individual">
+    <div class="card">
+      <div class="itrack-head">
+        <div>
+          <label class="field-lbl">Select Personnel</label>
+          <select id="personSelect" style="min-width:260px;"></select>
+        </div>
+      </div>
+      <div id="individualBody"></div>
+    </div>
+  </div>
+
+  <!-- ===================== ROSTER & SETUP ===================== -->
+  <div class="view" id="view-roster">
+    <div class="card">
+      <h2>Personnel Roster</h2>
+      <p class="sub">Add each PSDS and EPS under your supervision. Toggle which special-function outputs apply to them (e.g. LRMS-tagged items only count for LR Management staff).</p>
+      <div class="roster-add">
+        <div>
+          <label class="field-lbl">Full Name</label>
+          <input type="text" id="newName" placeholder="e.g. Juan D. Cruz">
+        </div>
+        <div>
+          <label class="field-lbl">Position</label>
+          <select id="newPosition">
+            <option>PSDS</option>
+            <option>EPS</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-lbl">District / Unit</label>
+          <input type="text" id="newDistrict" placeholder="e.g. Romblon District / LRMS">
+        </div>
+        <div style="display:flex;gap:12px;padding-bottom:8px;">
+          <label class="flag-check"><input type="checkbox" id="newFlagLrms"> LRMS-related</label>
+          <label class="flag-check"><input type="checkbox" id="newFlagResearch" checked> Research-related</label>
+          <label class="flag-check"><input type="checkbox" id="newFlagAssessment" checked> Assessment-related</label>
+        </div>
+        <button class="btn" onclick="addPerson()">+ Add Personnel</button>
+      </div>
+      <div id="rosterList"></div>
+      <p class="empty-note" id="rosterEmpty" style="display:none;">No personnel added yet. Add your first PSDS or EPS above.</p>
+    </div>
+
+    <div class="row">
+      <div class="card" style="flex:1;min-width:300px;">
+        <h2>QMS&ndash;QCP Output Items</h2>
+        <p class="sub">The division checklist template leaves this column open &mdash; define the Quality Control Plan outputs your CID monitors here. These apply to all personnel.</p>
+        <div class="roster-add" style="margin-bottom:10px;">
+          <div style="flex:1;"><label class="field-lbl">Item name</label><input type="text" id="newQcpItem" placeholder="e.g. QCP Monitoring Report - Q1" style="width:100%;"></div>
+          <button class="btn ghost" onclick="addListItem('qcpItems','newQcpItem')">+ Add</button>
+        </div>
+        <div class="item-list" id="qcpItemsList"></div>
+      </div>
+
+      <div class="card" style="flex:1;min-width:300px;">
+        <h2>Others (Specify)</h2>
+        <p class="sub">Any additional commitments/outputs not covered by IPCR, QCP, or AIP columns.</p>
+        <div class="roster-add" style="margin-bottom:10px;">
+          <div style="flex:1;"><label class="field-lbl">Item name</label><input type="text" id="newOtherItem" placeholder="e.g. Division LAC Session Report" style="width:100%;"></div>
+          <button class="btn ghost" onclick="addListItem('otherItems','newOtherItem')">+ Add</button>
+        </div>
+        <div class="item-list" id="otherItemsList"></div>
+      </div>
+    </div>
+
+    <div class="card no-print">
+      <h2>Data</h2>
+      <p class="sub">All data is saved automatically to this dashboard. Use reset only if you want to start over.</p>
+      <button class="btn danger" onclick="resetAll()">Reset all data</button>
+    </div>
+  </div>
+
+  <p class="footer-note">CID Progress Tracking Dashboard &middot; aligned to Division Memorandum No. 318, s. 2026 &middot; Enclosure 1: Status Report on Commitments and Outputs</p>
+</main>
 
 <script>
 /* ============================================================
-   STORAGE CONFIG — replace before deploying
-   1. Deploy Code.gs as an Apps Script Web App (Deploy > New
-      deployment > Web app > Execute as Me > Who has access: Anyone).
-   2. Copy the Web App URL it gives you (ends in /exec).
-   3. Paste it below.
+   CHECKLIST DEFINITION — derived from the CID Checklist of
+   Outputs/MOVs (CY 2026). Tags: core | lrms | research | assessment
    ============================================================ */
-const APPS_SCRIPT_URL = 'PASTE_YOUR_WEB_APP_URL_HERE';
+const IPCR = {
+  January:   [["ISP","core"],["TA Plan","core"],["M Plan","core"],["M Report","core"]],
+  February:  [["M Plan","core"],["M Report","core"]],
+  March:     [["IS Report","core"],["TA Report","core"],["M Plan","core"],["Agreement","core"],["Integrative Mechanism","core"],["Report and Analysis of Assessment Results","assessment"]],
+  April:     [["M Plan","core"],["M Report","core"]],
+  May:       [["M Plan","core"],["M Report","core"]],
+  June:      [["M Plan","core"],["M Report","core"],["Agreement","core"],["Integrative Mechanism","core"]],
+  July:      [["ISP","core"],["TA Plan","core"],["M Plan","core"],["M Report","core"],["DLRTA (LRMS only)","lrms"],["Activity/Project Proposal","core"]],
+  August:    [["M Plan","core"],["M Report","core"],["Work Plan for Assessment","assessment"]],
+  September: [["M Plan","core"],["M Report","core"],["Agreement","core"],["Integrative Mechanism","core"],["Report and Analysis of Assessment Results","assessment"],["Research Proposal","research"],["List of Target Schools (Research)","research"],["Research Utilization Plan","research"]],
+  October:   [["ISP","core"],["TA Plan","core"],["M Plan","core"],["M Report","core"]],
+  November:  [["M Plan","core"],["M Report","core"],["LR Evaluation Tools (LRMS only)","lrms"],["Field Validation Result (LRMS only)","lrms"],["Inventory of Quality Assured LRs (LRMS only)","lrms"],["Specialty Clearance (LRMS only)","lrms"]],
+  December:  [["Research Manuscript","research"],["M Plan","core"],["M Report","core"],["Agreement","core"],["Integrative Mechanism","core"],["Report and Analysis of Assessment Results","assessment"],["Developed LRs (LRMS only)","lrms"],["Assessment Readiness Report","assessment"],["Post-Assessment Evaluation Report","assessment"]]
+};
+const AIP = {
+  March:     [["PMIS","core"]],
+  June:      [["PMIS","core"]],
+  August:    [["WFP","core"],["Market Scoping","core"],["PPMP","core"],["APP","core"]],
+  September: [["PMIS","core"]],
+  December:  [["PMIS","core"]]
+};
+const QUARTERS = {
+  "Quarter 1": ["January","February","March"],
+  "Quarter 2": ["April","May","June"],
+  "Quarter 3": ["July","August","September"],
+  "Quarter 4": ["October","November","December"]
+};
 
-const DOC_TYPES = [
-  {key:'ipcrf', name:'IPCRF / OPCRF', sub:'Outputs / MOVs'},
-  {key:'qcp',   name:'CID QMS-QCP',   sub:'Outputs'},
-  {key:'aip',   name:'DEDP-AIP',      sub:'Commitments / Targets'}
-];
+/* ---------- shared storage layout ----------
+   'cid-config'            -> { personnel, qcpItems, otherItems, cy }   (shared, admin-managed)
+   'cid-status:<personId>' -> { itemKey: true/false, ... }              (shared, one key per person)
+   Splitting status per person means a PSDS checking a box can't clobber
+   another PSDS's checkboxes or the roster, even with concurrent editors. */
+let DATA = { personnel: [], qcpItems: [], otherItems: [], cy: "2026" };
+let STATUS = {}; // personId -> { itemKey: bool }
+const CONFIG_KEY = "cid-config";
+const STATUS_PREFIX = "cid-status:";
+let currentPersonId = null;
 
-let people = [];      // [{id,name,role}]
-let records = {};     // personId -> {submitted, docs:{ipcrf:{req,done},...}, remarks, lastSubmittedAt}
-let timeline = [];    // [{ts, personName, event}]
-let currentFilter = 'all';
-let backendReady = false;
-let saveTimer = null;
+function uid(){ return 'p' + Math.random().toString(36).slice(2,10); }
 
-const $ = (id)=>document.getElementById(id);
-function uid(){ return 'x'+Math.random().toString(36).slice(2,10); }
-
-function showToast(msg){
-  const t = $('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(showToast._t);
-  showToast._t = setTimeout(()=>t.classList.remove('show'), 2200);
-}
-
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-
-function fmtTs(iso){
-  if(!iso) return '';
-  const d = new Date(iso);
-  if(isNaN(d)) return iso;
-  return d.toLocaleString(undefined, {month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit'});
-}
-
-function logEvent(personName, event){
-  timeline.push({ts: new Date().toISOString(), personName, event});
-}
-
-function blankRecord(){
-  const docs = {};
-  DOC_TYPES.forEach(d=> docs[d.key] = {req:0, done:0});
-  return {submitted:false, docs, remarks:'', lastSubmittedAt:null};
-}
-
-function computePct(rec){
-  let req=0, done=0;
-  DOC_TYPES.forEach(d=>{ req += Number(rec.docs[d.key].req)||0; done += Number(rec.docs[d.key].done)||0; });
-  if(req===0) return 0;
-  return Math.round((done/req)*1000)/10;
-}
-function pctClass(p){ if(p>=90) return 'high'; if(p>=50) return 'mid'; return 'low'; }
-
-/* ---------- Apps Script storage layer ---------- */
-
-function setDriveStatus(mode, text){
-  const dot = $('driveStatusDot');
-  dot.className = 'dot ' + mode;
-  $('driveStatusText').textContent = text;
-  $('footerStorageMode').textContent =
-    mode === 'on' ? 'Google Drive + Sheets, via Apps Script (synced)' :
-    mode === 'pending' ? 'saving…' : 'local (not saved)';
-}
-
-async function backendGet(){
-  const res = await fetch(APPS_SCRIPT_URL, {method:'GET'});
-  if(!res.ok) throw new Error('Backend error '+res.status);
-  return res.json();
-}
-async function backendSave(obj){
-  const res = await fetch(APPS_SCRIPT_URL, {
-    method:'POST',
-    headers:{'Content-Type':'text/plain;charset=utf-8'}, // keeps this a "simple request", avoids CORS preflight
-    body: JSON.stringify(obj)
-  });
-  try{ return await res.json(); }catch(e){ return null; }
-}
-
-async function initBackend(){
-  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.startsWith('PASTE_YOUR')){
-    setDriveStatus('off', 'Not configured — set APPS_SCRIPT_URL in the file');
-    renderAll();
-    return;
-  }
-  setDriveStatus('pending', 'Connecting…');
+async function loadConfig(){
   try{
-    const blob = await backendGet();
-    people = blob.people || [];
-    records = blob.records || {};
-    timeline = blob.timeline || [];
-    people.forEach(p=>{ if(!records[p.id]) records[p.id] = blankRecord(); });
-    if(blob._sheetUrl){
-      const link = $('sheetLink');
-      link.href = blob._sheetUrl;
-      link.style.display = 'inline';
+    const res = await window.storage.get(CONFIG_KEY, true);
+    if(res && res.value){
+      const parsed = JSON.parse(res.value);
+      DATA = Object.assign({personnel:[],qcpItems:[],otherItems:[],cy:"2026"}, parsed);
     }
-    backendReady = true;
-    setDriveStatus('on', 'Connected — saving to Drive & Sheets automatically');
-    renderAll();
+  }catch(e){ /* no config saved yet */ }
+  document.getElementById('cyInput').value = DATA.cy || "2026";
+}
+
+async function saveConfig(){
+  try{
+    await window.storage.set(CONFIG_KEY, JSON.stringify(DATA), true);
+  }catch(e){ console.error('Storage error (config)', e); }
+}
+
+async function loadPersonStatus(personId){
+  try{
+    const res = await window.storage.get(STATUS_PREFIX + personId, true);
+    STATUS[personId] = (res && res.value) ? JSON.parse(res.value) : {};
   }catch(e){
-    setDriveStatus('off', 'Could not reach the backend — check APPS_SCRIPT_URL and your connection');
-    renderAll();
+    STATUS[personId] = {}; // key doesn't exist yet — that's fine
   }
 }
 
-function scheduleSave(){
-  if(!backendReady){
-    setDriveStatus('off', 'Not connected — changes will not be saved');
+async function loadAllStatus(){
+  await Promise.all(DATA.personnel.map(p => loadPersonStatus(p.id)));
+}
+
+async function savePersonStatus(personId){
+  try{
+    await window.storage.set(STATUS_PREFIX + personId, JSON.stringify(STATUS[personId] || {}), true);
+  }catch(e){ console.error('Storage error (status)', e); }
+}
+
+async function deletePersonStatus(personId){
+  try{ await window.storage.delete(STATUS_PREFIX + personId, true); }catch(e){ /* ignore */ }
+}
+
+async function loadData(){
+  await loadConfig();
+  await loadAllStatus();
+  renderAll();
+}
+
+async function refreshFromShared(){
+  await loadConfig();
+  await loadAllStatus();
+  renderAll();
+}
+
+/* ============================================================
+   ROLE ACCESS — local to this device/tab only (sessionStorage),
+   never written to shared storage. Gates which tabs/controls show.
+   ============================================================ */
+const ROLE_LABELS = {
+  chief: 'CID Chief · View Only',
+  secretariat: 'Secretariat · Full Edit',
+  staff: 'PSDS/EPS · Self-Report'
+};
+let ROLE = null;
+
+function getUrlRole(){
+  const p = new URLSearchParams(window.location.search).get('role');
+  return ['chief','secretariat','staff'].includes(p) ? p : null;
+}
+
+function initRole(){
+  ROLE = getUrlRole() || sessionStorage.getItem('cid-role');
+  if(ROLE){
+    document.getElementById('roleOverlay').style.display = 'none';
+    applyRole(ROLE);
+  } else {
+    document.getElementById('roleOverlay').style.display = 'flex';
+    document.getElementById('rosterTabBtn').style.display = 'none'; // hide until a role is picked
+  }
+}
+
+function chooseRole(role){
+  ROLE = role;
+  try{ sessionStorage.setItem('cid-role', role); }catch(e){}
+  document.getElementById('roleOverlay').style.display = 'none';
+  applyRole(role);
+}
+
+function switchRole(){
+  try{ sessionStorage.removeItem('cid-role'); }catch(e){}
+  document.getElementById('roleOverlay').style.display = 'flex';
+}
+
+function applyRole(role){
+  document.getElementById('roleBadge').textContent = ROLE_LABELS[role] || role;
+  const rosterBtn = document.getElementById('rosterTabBtn');
+  if(role === 'secretariat'){
+    rosterBtn.style.display = '';
+  } else {
+    rosterBtn.style.display = 'none';
+    if(rosterBtn.classList.contains('active')){
+      rosterBtn.classList.remove('active');
+      document.getElementById('view-roster').classList.remove('active');
+      document.querySelector('.tab[data-view="dashboard"]').classList.add('active');
+      document.getElementById('view-dashboard').classList.add('active');
+    }
+  }
+  renderIndividual(); // re-render so checkbox disabled-state matches role
+}
+
+function canEdit(){
+  return ROLE === 'secretariat' || ROLE === 'staff';
+}
+
+/* ---------- tag applicability ---------- */
+function personIncludesTag(person, tag){
+  if(tag === 'core') return true;
+  if(tag === 'lrms') return !!person.flags.lrms;
+  if(tag === 'research') return !!person.flags.research;
+  if(tag === 'assessment') return !!person.flags.assessment;
+  return true;
+}
+
+function itemKey(cat, month, name){
+  return cat + '|' + (month || '-') + '|' + name;
+}
+
+function isChecked(personId, key){
+  return !!(STATUS[personId] && STATUS[personId][key]);
+}
+function setChecked(personId, key, val){
+  if(!STATUS[personId]) STATUS[personId] = {};
+  STATUS[personId][key] = val;
+}
+
+/* ---------- compute per-person counts ---------- */
+function computePerson(person){
+  const counts = { IPCR:{req:0,done:0}, QCP:{req:0,done:0}, AIP:{req:0,done:0}, OTHER:{req:0,done:0} };
+  for(const month in IPCR){
+    IPCR[month].forEach(([name,tag])=>{
+      if(!personIncludesTag(person, tag)) return;
+      counts.IPCR.req++;
+      if(isChecked(person.id, itemKey('IPCR',month,name))) counts.IPCR.done++;
+    });
+  }
+  for(const month in AIP){
+    AIP[month].forEach(([name,tag])=>{
+      if(!personIncludesTag(person, tag)) return;
+      counts.AIP.req++;
+      if(isChecked(person.id, itemKey('AIP',month,name))) counts.AIP.done++;
+    });
+  }
+  DATA.qcpItems.forEach(item=>{
+    counts.QCP.req++;
+    if(isChecked(person.id, itemKey('QCP',null,item.id))) counts.QCP.done++;
+  });
+  DATA.otherItems.forEach(item=>{
+    counts.OTHER.req++;
+    if(isChecked(person.id, itemKey('OTHER',null,item.id))) counts.OTHER.done++;
+  });
+  const totalReq = counts.IPCR.req + counts.QCP.req + counts.AIP.req + counts.OTHER.req;
+  const totalDone = counts.IPCR.done + counts.QCP.done + counts.AIP.done + counts.OTHER.done;
+  return { counts, totalReq, totalDone, pct: totalReq ? Math.round((totalDone/totalReq)*100) : 0 };
+}
+
+function pctColor(pct){
+  if(pct >= 80) return 'green';
+  if(pct >= 50) return 'amber';
+  return 'red';
+}
+function colorHex(c){
+  return c==='green' ? '#1E7A46' : c==='amber' ? '#B8720B' : '#B3261E';
+}
+
+/* ============================================================
+   RENDER: DASHBOARD
+   ============================================================ */
+function renderDashboard(){
+  const body = document.getElementById('dashboardBody');
+  body.innerHTML = '';
+  let sumReq=0, sumDone=0, onTrack=0;
+
+  DATA.personnel.forEach(person=>{
+    const r = computePerson(person);
+    sumReq += r.totalReq; sumDone += r.totalDone;
+    if(r.pct >= 80) onTrack++;
+
+    const tr = document.createElement('tr');
+    const catCell = (c)=>{
+      const pct = c.req ? Math.round((c.done/c.req)*100) : 0;
+      const col = pctColor(pct);
+      return `<td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${colorHex(col)}"></div></div>
+      <span class="bar-pct">${c.done}/${c.req} &middot; ${pct}%</span></td>`;
+    };
+    const overallCol = pctColor(r.pct);
+    tr.innerHTML = `
+      <td class="name-cell">${person.name}<div class="pos-tag">${person.position}${person.district? ' &middot; '+person.district:''}</div></td>
+      ${catCell(r.counts.IPCR)}
+      ${catCell(r.counts.QCP)}
+      ${catCell(r.counts.AIP)}
+      ${catCell(r.counts.OTHER)}
+      <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:${r.pct}%;background:${colorHex(overallCol)}"></div></div>
+      <span class="bar-pct">${r.totalDone}/${r.totalReq} &middot; ${r.pct}%</span></td>
+      <td><span class="pill ${overallCol}">${overallCol==='green'?'On track':overallCol==='amber'?'Needs follow-up':'At risk'}</span></td>
+    `;
+    body.appendChild(tr);
+  });
+
+  if(DATA.personnel.length === 0){
+    body.innerHTML = `<tr><td colspan="7" class="empty-note">No personnel yet. Go to <b>Roster &amp; Setup</b> to add your PSDS and EPS list.</td></tr>`;
+  }
+
+  const divisionPct = sumReq ? Math.round((sumDone/sumReq)*100) : 0;
+  document.getElementById('statPersonnel').textContent = DATA.personnel.length;
+  document.getElementById('statDone').textContent = sumDone;
+  document.getElementById('statRequired').textContent = sumReq;
+  document.getElementById('statOnTrack').textContent = onTrack + ' / ' + DATA.personnel.length;
+  document.getElementById('ringPct').textContent = divisionPct + '%';
+  const circumference = 352;
+  const offset = circumference - (circumference * divisionPct/100);
+  const ring = document.getElementById('ringFg');
+  ring.setAttribute('stroke-dashoffset', offset);
+  ring.setAttribute('stroke', colorHex(pctColor(divisionPct)));
+}
+
+/* ============================================================
+   RENDER: ROSTER & SETUP
+   ============================================================ */
+function renderRoster(){
+  const list = document.getElementById('rosterList');
+  const empty = document.getElementById('rosterEmpty');
+  list.innerHTML = '';
+  empty.style.display = DATA.personnel.length ? 'none' : 'block';
+
+  DATA.personnel.forEach(person=>{
+    const div = document.createElement('div');
+    div.className = 'person-row';
+    const flagBadges = [];
+    if(person.flags.lrms) flagBadges.push('LRMS');
+    if(person.flags.research) flagBadges.push('Research');
+    if(person.flags.assessment) flagBadges.push('Assessment');
+    div.innerHTML = `
+      <div class="person-info">
+        <div style="font-weight:600;">${person.name} <span style="color:var(--ink-soft);font-weight:400;">&middot; ${person.position}${person.district? ' &middot; '+person.district:''}</span></div>
+        <div class="person-flags">${flagBadges.map(f=>`<span class="flag-badge">${f}</span>`).join('') || '<span class="flag-badge">Core only</span>'}</div>
+      </div>
+      <button class="btn danger" style="padding:6px 12px;font-size:12px;" onclick="removePerson('${person.id}')">Remove</button>
+    `;
+    list.appendChild(div);
+  });
+
+  renderListItems('qcpItemsList','qcpItems');
+  renderListItems('otherItemsList','otherItems');
+  populatePersonSelect();
+}
+
+function renderListItems(containerId, key){
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  if(DATA[key].length === 0){
+    container.innerHTML = '<p class="empty-note" style="padding:6px 0;">No items defined yet.</p>';
     return;
   }
-  setDriveStatus('pending', 'Saving…');
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(async ()=>{
-    try{
-      const res = await backendSave({people, records, timeline});
-      if(res && res.sheetUrl){
-        const link = $('sheetLink');
-        link.href = res.sheetUrl;
-        link.style.display = 'inline';
-      }
-      setDriveStatus('on', 'Connected — saving to Drive & Sheets automatically');
-    }catch(e){
-      setDriveStatus('off', 'Save failed — check your connection');
-      showToast('Could not save');
-    }
-  }, 500);
+  DATA[key].forEach(item=>{
+    const div = document.createElement('div');
+    div.className = 'item-line';
+    div.innerHTML = `<span>${item.label}</span><button class="btn danger" style="padding:4px 10px;font-size:11.5px;" onclick="removeListItem('${key}','${item.id}')">Remove</button>`;
+    container.appendChild(div);
+  });
 }
 
-/* ---------- Rendering ---------- */
+function addPerson(){
+  const name = document.getElementById('newName').value.trim();
+  if(!name){ return; }
+  const position = document.getElementById('newPosition').value;
+  const district = document.getElementById('newDistrict').value.trim();
+  const flags = {
+    lrms: document.getElementById('newFlagLrms').checked,
+    research: document.getElementById('newFlagResearch').checked,
+    assessment: document.getElementById('newFlagAssessment').checked
+  };
+  const newPerson = { id: uid(), name, position, district, flags };
+  DATA.personnel.push(newPerson);
+  STATUS[newPerson.id] = {};
+  document.getElementById('newName').value = '';
+  document.getElementById('newDistrict').value = '';
+  document.getElementById('newFlagLrms').checked = false;
+  document.getElementById('newFlagResearch').checked = true;
+  document.getElementById('newFlagAssessment').checked = true;
+  saveConfig(); renderAll();
+}
+
+function removePerson(id){
+  if(!confirm('Remove this personnel and their tracked progress?')) return;
+  DATA.personnel = DATA.personnel.filter(p=>p.id!==id);
+  delete STATUS[id];
+  saveConfig();
+  deletePersonStatus(id);
+  renderAll();
+}
+
+function addListItem(key, inputId){
+  const input = document.getElementById(inputId);
+  const label = input.value.trim();
+  if(!label) return;
+  DATA[key].push({ id: uid(), label });
+  input.value = '';
+  saveConfig(); renderAll();
+}
+
+function removeListItem(key, id){
+  DATA[key] = DATA[key].filter(i=>i.id!==id);
+  saveConfig(); renderAll();
+}
+
+async function resetAll(){
+  if(!confirm('This will permanently erase all personnel and progress data from this shared dashboard for everyone using this link. Continue?')) return;
+  await Promise.all(DATA.personnel.map(p => deletePersonStatus(p.id)));
+  DATA = { personnel: [], qcpItems: [], otherItems: [], cy: document.getElementById('cyInput').value || "2026" };
+  STATUS = {};
+  await saveConfig();
+  renderAll();
+}
+
+/* ============================================================
+   RENDER: INDIVIDUAL TRACKER
+   ============================================================ */
+function populatePersonSelect(){
+  const sel = document.getElementById('personSelect');
+  const prev = currentPersonId;
+  sel.innerHTML = '';
+  if(DATA.personnel.length === 0){
+    sel.innerHTML = '<option>No personnel added yet</option>';
+    currentPersonId = null;
+    renderIndividual();
+    return;
+  }
+  DATA.personnel.forEach(p=>{
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `${p.name} (${p.position})`;
+    sel.appendChild(opt);
+  });
+  if(prev && DATA.personnel.find(p=>p.id===prev)){
+    sel.value = prev;
+    currentPersonId = prev;
+  } else {
+    currentPersonId = DATA.personnel[0].id;
+    sel.value = currentPersonId;
+  }
+  renderIndividual();
+}
+
+document.addEventListener('change', (e)=>{
+  if(e.target.id === 'personSelect'){
+    currentPersonId = e.target.value;
+    loadPersonStatus(currentPersonId).then(renderIndividual); // pull latest in case they last updated elsewhere
+  }
+});
+
+function renderIndividual(){
+  const container = document.getElementById('individualBody');
+  if(!currentPersonId){
+    container.innerHTML = '<p class="empty-note">Add personnel in the Roster &amp; Setup tab first.</p>';
+    return;
+  }
+  const person = DATA.personnel.find(p=>p.id===currentPersonId);
+  if(!person){ container.innerHTML=''; return; }
+  const r = computePerson(person);
+
+  let html = '';
+  html += `<div class="summary-strip">
+    <div class="summary-chip"><div class="k">IPCR/OPCRF</div><div class="v">${r.counts.IPCR.done}/${r.counts.IPCR.req}</div></div>
+    <div class="summary-chip"><div class="k">QMS&ndash;QCP</div><div class="v">${r.counts.QCP.done}/${r.counts.QCP.req}</div></div>
+    <div class="summary-chip"><div class="k">DEDP&ndash;AIP</div><div class="v">${r.counts.AIP.done}/${r.counts.AIP.req}</div></div>
+    <div class="summary-chip"><div class="k">Others</div><div class="v">${r.counts.OTHER.done}/${r.counts.OTHER.req}</div></div>
+    <div class="summary-chip" style="background:var(--navy);"><div class="k" style="color:#B9C6D6;">Overall</div><div class="v" style="color:#fff;">${r.pct}%</div></div>
+  </div>`;
+
+  html += `<h3 style="color:var(--navy);font-size:14px;margin:22px 0 4px 0;">IPCR / OPCRF &mdash; Outputs/MOVs</h3>`;
+  for(const qname in QUARTERS){
+    html += `<div class="quarter-block"><div class="quarter-title">${qname}</div><div class="month-grid">`;
+    QUARTERS[qname].forEach(month=>{
+      const items = IPCR[month].filter(([name,tag])=>personIncludesTag(person,tag));
+      if(items.length === 0) return;
+      html += `<div class="month-card"><h4>${month}</h4>`;
+      items.forEach(([name])=>{
+        const key = itemKey('IPCR',month,name);
+        const checked = isChecked(person.id,key);
+        html += `<div class="check-line ${checked?'done':''}">
+          <input type="checkbox" data-key="${key}" data-cat="IPCR" ${checked?'checked':''} ${canEdit()?'':'disabled'}>
+          <label>${name}</label>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  html += `<h3 style="color:var(--navy);font-size:14px;margin:22px 0 4px 0;">DEDP&ndash;AIP &mdash; Commitments/Targets</h3><div class="month-grid">`;
+  for(const month in AIP){
+    const items = AIP[month].filter(([name,tag])=>personIncludesTag(person,tag));
+    if(items.length===0) continue;
+    html += `<div class="month-card"><h4>${month}</h4>`;
+    items.forEach(([name])=>{
+      const key = itemKey('AIP',month,name);
+      const checked = isChecked(person.id,key);
+      html += `<div class="check-line ${checked?'done':''}">
+        <input type="checkbox" data-key="${key}" data-cat="AIP" ${checked?'checked':''} ${canEdit()?'':'disabled'}>
+        <label>${name}</label>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  html += `</div>`;
+
+  if(DATA.qcpItems.length){
+    html += `<h3 style="color:var(--navy);font-size:14px;margin:22px 0 4px 0;">QMS&ndash;QCP Outputs</h3><div class="month-grid"><div class="month-card"><h4>Quality Control Plan</h4>`;
+    DATA.qcpItems.forEach(item=>{
+      const key = itemKey('QCP',null,item.id);
+      const checked = isChecked(person.id,key);
+      html += `<div class="check-line ${checked?'done':''}">
+        <input type="checkbox" data-key="${key}" ${checked?'checked':''} ${canEdit()?'':'disabled'}>
+        <label>${item.label}</label>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  if(DATA.otherItems.length){
+    html += `<h3 style="color:var(--navy);font-size:14px;margin:22px 0 4px 0;">Others</h3><div class="month-grid"><div class="month-card"><h4>Other Commitments</h4>`;
+    DATA.otherItems.forEach(item=>{
+      const key = itemKey('OTHER',null,item.id);
+      const checked = isChecked(person.id,key);
+      html += `<div class="check-line ${checked?'done':''}">
+        <input type="checkbox" data-key="${key}" ${checked?'checked':''} ${canEdit()?'':'disabled'}>
+        <label>${item.label}</label>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  container.innerHTML = html;
+
+  container.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.addEventListener('change', (e)=>{
+      if(!canEdit()) return; // safety net — disabled attr already blocks this in practice
+      const key = e.target.getAttribute('data-key');
+      setChecked(currentPersonId, key, e.target.checked);
+      savePersonStatus(currentPersonId); // writes only this person's key — safe with concurrent editors
+      renderIndividual();
+      renderDashboard();
+    });
+  });
+}
+
+/* ============================================================
+   TABS + INIT
+   ============================================================ */
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    if(btn.dataset.view === 'roster' && ROLE !== 'secretariat') return; // hidden tab, guard against stray clicks
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+    // pull latest shared data whenever the person switches views
+    if(btn.dataset.view === 'dashboard'){
+      await loadAllStatus();
+      renderDashboard();
+    } else if(btn.dataset.view === 'individual' && currentPersonId){
+      await loadPersonStatus(currentPersonId);
+      renderIndividual();
+    }
+  });
+});
+
+document.getElementById('cyInput').addEventListener('change', (e)=>{
+  DATA.cy = e.target.value;
+  saveConfig();
+});
 
 function renderAll(){
-  renderStats();
-  renderPeople();
-  renderTimeline();
+  renderDashboard();
+  renderRoster();
 }
 
-function renderStats(){
-  $('statPeople').textContent = people.length;
-  const submitted = people.filter(p=> records[p.id] && records[p.id].submitted).length;
-  $('statSubmitted').textContent = submitted;
-  $('statPending').textContent = people.length - submitted;
-  const pcts = people.map(p=> computePct(records[p.id] || blankRecord()));
-  const avg = pcts.length ? Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length) : 0;
-  $('statAvg').textContent = avg + '%';
-}
-
-function renderPeople(){
-  const wrap = $('peopleList');
-  wrap.innerHTML = '';
-  let list = people;
-  if(currentFilter === 'submitted') list = people.filter(p=> records[p.id] && records[p.id].submitted);
-  if(currentFilter === 'pending') list = people.filter(p=> !records[p.id] || !records[p.id].submitted);
-
-  if(people.length === 0){
-    wrap.innerHTML = `<div class="empty">No personnel on the roster yet.<br><b>Add names above</b> to start tracking progress.</div>`;
-    return;
-  }
-  if(list.length === 0){
-    wrap.innerHTML = `<div class="empty">No one matches this filter.</div>`;
-    return;
-  }
-
-  list.forEach(person=>{
-    const rec = records[person.id] || (records[person.id]=blankRecord());
-    const pct = computePct(rec);
-    const cls = pctClass(pct);
-
-    const card = document.createElement('div');
-    card.className = 'person-card';
-    card.innerHTML = `
-      <div class="person-top">
-        <div class="person-id">
-          <div class="stamp-toggle ${rec.submitted?'on':'off'}" data-id="${person.id}" title="Toggle submission status">
-            <div class="ring"></div>
-            <div class="txt">${rec.submitted ? 'RECEIVED' : 'PENDING'}</div>
-          </div>
-          <div>
-            <div class="person-name">${escapeHtml(person.name)}</div>
-            <div class="person-role">${escapeHtml(person.role||'—')}</div>
-            <div class="person-meta">${rec.submitted ? 'Last submitted: '+fmtTs(rec.lastSubmittedAt) : 'Not yet submitted'}</div>
-          </div>
-        </div>
-        <div style="display:flex; gap:18px; align-items:flex-start;">
-          <div class="pct-block">
-            <div class="pct-num ${cls}">${pct}%</div>
-            <div class="pct-label">Done (C/B)</div>
-          </div>
-          <button class="btn ghost small removeBtn" data-id="${person.id}">Remove</button>
-        </div>
-      </div>
-      <div class="gauge"><i class="${cls}" style="width:${Math.min(pct,100)}%"></i></div>
-      <table class="docs-table">
-        <thead><tr><th>Planning Document</th><th style="text-align:center">Required</th><th style="text-align:center">Done</th><th style="text-align:right">%</th></tr></thead>
-        <tbody>
-          ${DOC_TYPES.map(d=>{
-            const v = rec.docs[d.key];
-            const dp = v.req>0 ? Math.round((v.done/v.req)*1000)/10 : 0;
-            return `<tr>
-              <td class="doc-name">${d.name}<small>${d.sub}</small></td>
-              <td class="num"><input type="number" min="0" data-id="${person.id}" data-doc="${d.key}" data-field="req" value="${v.req}"></td>
-              <td class="num"><input type="number" min="0" data-id="${person.id}" data-doc="${d.key}" data-field="done" value="${v.done}"></td>
-              <td class="pct">${dp}%</td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>
-      <div class="remarks-row">
-        <label class="small">Remarks</label>
-        <textarea data-id="${person.id}" placeholder="Notes…">${escapeHtml(rec.remarks||'')}</textarea>
-      </div>
-    `;
-    wrap.appendChild(card);
-  });
-
-  wrap.querySelectorAll('.stamp-toggle').forEach(el=>{
-    el.addEventListener('click', ()=>{
-      const id = el.dataset.id;
-      const person = people.find(p=>p.id===id);
-      const rec = records[id];
-      rec.submitted = !rec.submitted;
-      if(rec.submitted) rec.lastSubmittedAt = new Date().toISOString();
-      logEvent(person.name, rec.submitted ? 'Marked as submitted' : 'Marked as pending');
-      scheduleSave();
-      renderAll();
-    });
-  });
-  wrap.querySelectorAll('input[type=number]').forEach(el=>{
-    el.addEventListener('change', ()=>{
-      const {id, doc, field} = el.dataset;
-      const person = people.find(p=>p.id===id);
-      const val = Math.max(0, Number(el.value)||0);
-      records[id].docs[doc][field] = val;
-      const docLabel = DOC_TYPES.find(d=>d.key===doc).name;
-      logEvent(person.name, `Updated ${docLabel}: ${records[id].docs[doc].done} of ${records[id].docs[doc].req} done`);
-      scheduleSave();
-      renderAll();
-    });
-  });
-  wrap.querySelectorAll('textarea').forEach(el=>{
-    el.addEventListener('change', ()=>{
-      records[el.dataset.id].remarks = el.value;
-      scheduleSave();
-    });
-  });
-  wrap.querySelectorAll('.removeBtn').forEach(el=>{
-    el.addEventListener('click', ()=>{
-      const id = el.dataset.id;
-      const person = people.find(p=>p.id===id);
-      if(!confirm(`Remove ${person.name} from the roster?`)) return;
-      logEvent(person.name, 'Removed from roster');
-      people = people.filter(p=>p.id!==id);
-      delete records[id];
-      scheduleSave();
-      renderAll();
-    });
-  });
-}
-
-function renderTimeline(){
-  const list = $('timelineList');
-  list.innerHTML = '';
-  if(timeline.length === 0){
-    list.innerHTML = '<li class="timeline-empty">No activity yet.</li>';
-    return;
-  }
-  const sorted = timeline.slice().sort((a,b)=> (b.ts||'').localeCompare(a.ts||'')).slice(0,60);
-  sorted.forEach(t=>{
-    const li = document.createElement('li');
-    li.innerHTML = `<span class="ts">${fmtTs(t.ts)}</span><span><span class="who">${escapeHtml(t.personName)}</span> — ${escapeHtml(t.event)}</span>`;
-    list.appendChild(li);
-  });
-}
-
-/* ---------- Events ---------- */
-
-$('addPersonBtn').addEventListener('click', ()=>{
-  const name = $('newPersonName').value.trim();
-  const role = $('newPersonRole').value.trim();
-  if(!name){ showToast('Enter a name first'); return; }
-  const person = {id:uid(), name, role};
-  people.push(person);
-  records[person.id] = blankRecord();
-  logEvent(name, 'Added to roster');
-  $('newPersonName').value=''; $('newPersonRole').value='';
-  scheduleSave();
-  renderAll();
-});
-
-document.querySelectorAll('.filter-tabs button').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.filter-tabs button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    currentFilter = btn.dataset.filter;
-    renderPeople();
-  });
-});
-
-renderAll();
-window.addEventListener('load', initBackend);
+loadData().then(initRole);
 </script>
 </body>
 </html>
